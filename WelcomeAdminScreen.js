@@ -42,7 +42,7 @@ export default function WelcomeAdminScreen({ navigation }) {
         </TouchableOpacity>
         <TouchableOpacity
           style={[styles.button, isDarkMode && styles.darkButton, { width: screenWidth * 0.8, height: screenHeight * 0.2 }]}
-          onPress={() => alert('Navegar a Justificación de Asistencia')}
+          onPress={() => navigation.navigate('ustificacionAsistencia')}
         >
           <Image
             source={require('./assets/opa.png')}
