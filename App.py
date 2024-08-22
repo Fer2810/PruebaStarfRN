@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import mysql.connector
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app)
@@ -82,6 +83,59 @@ def guardar_asistencia():
 
     connection.commit()
 
+    cursor.close()
+    connection.close()
+
+    return jsonify({"message": "Datos guardados con éxito"})
+
+# Ruta para obtener estudiantes no presentes (estado = 0)
+@app.route('/obtener_no_presentes', methods=['GET'])
+def obtener_no_presentes():
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT nie, nombre, apellido, bachillerato, genero, id_año FROM presentes WHERE estado = 0")
+    no_presentes = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return jsonify(no_presentes)
+
+# Ruta para guardar justificaciones
+@app.route('/guardar_justificaciones', methods=['POST'])
+def guardar_justificaciones():
+    datos = request.json  # Obtener la lista de objetos desde la solicitud
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    if not isinstance(datos, list):
+        return jsonify({'error': 'El formato de los datos es incorrecto'}), 400
+
+    for item in datos:
+        # Imprime los datos para depuración
+        print(f"Inserting data for NIE {item.get('nie')}: {item}")
+
+        # Verificación de claves necesarias
+        required_keys = ['nie', 'nombre', 'apellido', 'bachillerato', 'genero', 'id_año', 'justificacion']
+        missing_keys = [key for key in required_keys if key not in item]
+
+        if missing_keys:
+            print(f"Las claves faltantes para el NIE {item.get('nie')} son: {missing_keys}")
+            continue  # O maneja este caso como prefieras
+
+        # Dependiendo del estado (check), se guarda en una tabla u otra
+        if item.get('check'):
+            cursor.execute("""
+                INSERT INTO asistencia_general (nie, nombre, apellido, bachillerato, genero, id_año, fecha_registro, justificacion_asistencia)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, (item['nie'], item['nombre'], item['apellido'], item['bachillerato'], item['genero'], item['id_año'], datetime.now(), item['justificacion']))
+        else:
+            cursor.execute("""
+                INSERT INTO no_asistencia_general (nie, nombre, apellido, bachillerato, genero, id_año, fecha_registro, justificacion_asistencia)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+            """, (item['nie'], item['nombre'], item['apellido'], item['bachillerato'], item['genero'], item['id_año'], datetime.now(), item['justificacion']))
+
+    connection.commit()
     cursor.close()
     connection.close()
 

@@ -17,7 +17,7 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import SidebarMenu from './SidebarMenu';
 import BottomNav from './BottomNav';
 
-export default function WelcomeAdminScreen({ navigation }) { // Añade la prop navigation
+export default function WelcomeAdminScreen({ navigation }) { 
   const [isDarkMode, setIsDarkMode] = useState(false);
   const drawerRef = useRef(null);
 
@@ -57,7 +57,7 @@ export default function WelcomeAdminScreen({ navigation }) { // Añade la prop n
         <View style={styles.content}>
           <TouchableOpacity
             style={[styles.button, isDarkMode && styles.darkButton, { width: screenWidth * 0.8, height: screenHeight * 0.2 }]}
-            onPress={() => navigation.navigate('PresentesScreen')} // Navega a la pantalla PresentesScreen
+            onPress={() => navigation.navigate('PresentesScreen')} 
           >
             <Image
               source={require('./assets/opa.png')}
@@ -67,7 +67,7 @@ export default function WelcomeAdminScreen({ navigation }) { // Añade la prop n
           </TouchableOpacity>
           <TouchableOpacity
             style={[styles.button, isDarkMode && styles.darkButton, { width: screenWidth * 0.8, height: screenHeight * 0.2 }]}
-            onPress={() => alert('Navegar a Justificación de Asistencia')}
+            onPress={() => navigation.navigate('JustificacionAsistencia')} 
           >
             <Image
               source={require('./assets/opa.png')}
@@ -89,7 +89,6 @@ export default function WelcomeAdminScreen({ navigation }) { // Añade la prop n
     </SafeAreaView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {

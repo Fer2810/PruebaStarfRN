@@ -7,7 +7,8 @@ import AdminScreen from './AdminScreen';
 import ProfesorScreen from './ProfesorScreen';
 import WelcomeAdminScreen from './WelcomeAdminScreen';
 import WelcomeProfesorScreen from './WelcomeProfesorScreen';
-import PresentesScreen from './PresentesScreen'; // Asegúrate de que este archivo exista y esté bien importado
+import PresentesScreen from './PresentesScreen';
+import JustificacionAsistencia from './JustificacionAsistencia'; // Asegúrate de que este archivo exista y esté bien importado
 
 const Stack = createStackNavigator();
 
@@ -44,6 +45,10 @@ export default function App() {
         <Stack.Screen 
           name="PresentesScreen" 
           component={PresentesScreen} 
+        />
+        <Stack.Screen 
+          name="JustificacionAsistencia" 
+          component={JustificacionAsistencia} 
         />
       </Stack.Navigator>
     </NavigationContainer>
