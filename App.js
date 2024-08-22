@@ -9,6 +9,7 @@ import ProfesorScreen from './ProfesorScreen';
 import WelcomeAdminScreen from './WelcomeAdminScreen';
 import WelcomeProfesorScreen from './WelcomeProfesorScreen';
 import PresentesScreen from './PresentesScreen';
+import JustificacionAsistencia from './JustificacionAsistencia';
 import FullScreenMenu from './FullScreenMenu'; // Importar FullScreenMenu
 
 const Stack = createStackNavigator();
@@ -53,7 +54,11 @@ export default function App() {
             component={FullScreenMenu} // Añadir FullScreenMenu al Stack
             options={{ headerShown: false }} 
           />
-        </Stack.Navigator>
+          <Stack.Screen 
+          name="JustificacionAsistencia" 
+          component={JustificacionAsistencia} 
+        />
+      </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>
   );
