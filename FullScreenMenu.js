@@ -11,7 +11,7 @@ import {
 import { ThemeContext } from './ThemeContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-export default function SidebarMenu({ navigation }) {
+export default function FullScreenMenu({ navigation }) {
   const { isDarkMode, toggleTheme } = useContext(ThemeContext);
   const screenWidth = Dimensions.get('window').width;
 
@@ -34,12 +34,14 @@ export default function SidebarMenu({ navigation }) {
         style={styles.menuItem}
         onPress={() => toggleTheme()}
       >
+        <Icon name="palette" size={24} color={isDarkMode ? 'white' : 'black'} />
         <Text style={[styles.menuItemText, isDarkMode && styles.darkText]}>Cambiar Tema</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.menuItem}
         onPress={() => navigation.navigate('HomeScreen')}
       >
+        <Icon name="logout" size={24} color={isDarkMode ? 'white' : 'black'} />
         <Text style={[styles.menuItemText, isDarkMode && styles.darkText]}>Cerrar Sesión</Text>
       </TouchableOpacity>
     </SafeAreaView>
@@ -76,9 +78,12 @@ const styles = StyleSheet.create({
     color: '#fff',
   },
   menuItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 15,
   },
   menuItemText: {
     fontSize: 18,
+    marginLeft: 10,
   },
 });

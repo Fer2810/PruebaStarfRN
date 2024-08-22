@@ -1,45 +1,40 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { ThemeContext } from './ThemeContext';
 
-export default function BottomNav({ selectedIndex, handleItemTapped, isDarkMode }) {
+const BottomNav = ({ selectedIndex, onItemTapped }) => {
+  const { isDarkMode } = useContext(ThemeContext);
+
   return (
-    <View style={[styles.bottomNav, isDarkMode && styles.darkBottomNav]}>
-      <TouchableOpacity
-        style={styles.navButton}
-        onPress={() => handleItemTapped(0)}
-      >
-        <Icon name="arrow-back" size={24} color={selectedIndex === 0 ? 'blue' : isDarkMode ? 'white' : 'black'} />
+    <View style={[styles.container, isDarkMode && styles.darkContainer]}>
+      <TouchableOpacity onPress={() => onItemTapped(0)} style={styles.navItem}>
+        <Icon name="arrow-back" size={30} color={selectedIndex === 0 ? (isDarkMode ? 'white' : 'black') : 'gray'} />
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.navButton}
-        onPress={() => handleItemTapped(1)}
-      >
-        <Icon name="home" size={24} color={selectedIndex === 1 ? 'blue' : isDarkMode ? 'white' : 'black'} />
+      <TouchableOpacity onPress={() => onItemTapped(1)} style={styles.navItem}>
+        <Icon name="home" size={30} color={selectedIndex === 1 ? (isDarkMode ? 'white' : 'black') : 'gray'} />
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.navButton}
-        onPress={() => handleItemTapped(2)}
-      >
-        <Icon name="person" size={24} color={selectedIndex === 2 ? 'blue' : isDarkMode ? 'white' : 'black'} />
+      <TouchableOpacity onPress={() => onItemTapped(2)} style={styles.navItem}>
+        <Icon name="person" size={30} color={selectedIndex === 2 ? (isDarkMode ? 'white' : 'black') : 'gray'} />
       </TouchableOpacity>
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  bottomNav: {
+  container: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    padding: 10,
-    backgroundColor: '#eee',
+    paddingVertical: 10,
+    backgroundColor: '#fff', // Fondo predeterminado claro
   },
-  darkBottomNav: {
-    backgroundColor: '#333',
+  darkContainer: {
+    backgroundColor: '#333', // Fondo para el modo oscuro
   },
-  navButton: {
+  navItem: {
     alignItems: 'center',
     justifyContent: 'center',
-    padding: 10,
   },
 });
+
+export default BottomNav;

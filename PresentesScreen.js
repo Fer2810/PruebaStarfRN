@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { View, Text, FlatList, Button, Alert, StyleSheet } from 'react-native';
 import axios from 'axios';
 import Dialog from "react-native-dialog";
+import { ThemeContext } from './ThemeContext'; // Importa el ThemeContext
 
 const PresentesScreen = () => {
     const [presentes, setPresentes] = useState([]);
@@ -9,10 +10,12 @@ const PresentesScreen = () => {
     const [showConfirm, setShowConfirm] = useState(false);
     const [showSaveConfirm, setShowSaveConfirm] = useState(false);
 
+    const { isDarkMode } = useContext(ThemeContext); // Utiliza el ThemeContext
+
     const obtenerPresentes = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('http://192.168.5.63:5000/obtener_presentes');
+            const response = await axios.get('http://192.168.5.98:5000/obtener_presentes');
             setPresentes(response.data);
         } catch (error) {
             console.error(error);
@@ -28,7 +31,7 @@ const PresentesScreen = () => {
     const guardarAsistencia = async () => {
         setShowSaveConfirm(false);
         try {
-            await axios.post('http://192.168.5.63:5000/guardar_asistencia', presentes);
+            await axios.post('http://192.168.5.98:5000/guardar_asistencia', presentes);
             Alert.alert('Éxito', 'Datos guardados con éxito');
         } catch (error) {
             console.error(error);
@@ -50,18 +53,18 @@ const PresentesScreen = () => {
     };
 
     const renderItem = ({ item }) => (
-        <View style={styles.itemContainer}>
-            <Text>NIE: {item.nie}</Text>
-            <Text>Nombre: {item.nombre}</Text>
-            <Text>Apellido: {item.apellido}</Text>
-            <Text>Bachillerato: {item.bachillerato}</Text>
-            <Text>Género: {item.genero}</Text>
-            <Text>Año: {item.id_año}</Text>
+        <View style={[styles.itemContainer, isDarkMode && styles.darkItemContainer]}>
+            <Text style={isDarkMode && styles.darkText}>NIE: {item.nie}</Text>
+            <Text style={isDarkMode && styles.darkText}>Nombre: {item.nombre}</Text>
+            <Text style={isDarkMode && styles.darkText}>Apellido: {item.apellido}</Text>
+            <Text style={isDarkMode && styles.darkText}>Bachillerato: {item.bachillerato}</Text>
+            <Text style={isDarkMode && styles.darkText}>Género: {item.genero}</Text>
+            <Text style={isDarkMode && styles.darkText}>Año: {item.id_año}</Text>
         </View>
     );
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, isDarkMode && styles.darkContainer]}>
             <FlatList
                 data={presentes}
                 renderItem={renderItem}
@@ -98,11 +101,20 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 20,
     },
+    darkContainer: {
+        backgroundColor: '#000',
+    },
     itemContainer: {
         marginBottom: 15,
         padding: 10,
         backgroundColor: '#f8f8f8',
         borderRadius: 5,
+    },
+    darkItemContainer: {
+        backgroundColor: '#333',
+    },
+    darkText: {
+        color: '#fff',
     },
 });
 

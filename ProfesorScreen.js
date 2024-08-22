@@ -8,7 +8,7 @@ const ProfesorScreen = () => {
   const navigation = useNavigation();
 
   const handleLogin = () => {
-    fetch('http://192.168.5.63:5000/login/profesor', {
+    fetch('http://192.168.5.98:5000/login/profesor', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

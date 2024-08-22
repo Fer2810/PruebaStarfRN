@@ -1,95 +1,60 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useContext } from 'react';
 import {
   StyleSheet,
   Text,
   View,
-  Button,
   Image,
   TouchableOpacity,
-  DrawerLayoutAndroid,
   StatusBar,
   Dimensions,
   SafeAreaView,
 } from 'react-native';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { ThemeContext } from './ThemeContext';
 import Icon from 'react-native-vector-icons/MaterialIcons';
-import SidebarMenu from './SidebarMenu';
 import BottomNav from './BottomNav';
 
-export default function WelcomeAdminScreen({ navigation }) { // Añade la prop navigation
-  const [isDarkMode, setIsDarkMode] = useState(false);
-  const drawerRef = useRef(null);
-
-  useEffect(() => {
-    loadTheme();
-  }, []);
-
-  const loadTheme = async () => {
-    try {
-      const value = await AsyncStorage.getItem('isDarkMode');
-      if (value !== null) {
-        setIsDarkMode(JSON.parse(value));
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
+export default function WelcomeAdminScreen({ navigation }) {
+  const { isDarkMode } = useContext(ThemeContext);
   const screenWidth = Dimensions.get('window').width;
   const screenHeight = Dimensions.get('window').height;
 
   return (
     <SafeAreaView style={[styles.container, isDarkMode && styles.darkContainer]}>
       <StatusBar style="auto" />
-      <DrawerLayoutAndroid
-        ref={drawerRef}
-        drawerWidth={screenWidth * 0.8}
-        drawerPosition="left"
-        renderNavigationView={() => (
-          <SidebarMenu
-            isDarkMode={isDarkMode}
-            toggleTheme={() => setIsDarkMode(!isDarkMode)}
-            handleLogout={() => alert('Cerrar sesión')}
+      <View style={styles.topBar}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('FullScreenMenu')}
+          style={styles.menuButton}
+        >
+          <Icon name="menu" size={30} color={isDarkMode ? 'white' : 'black'} />
+        </TouchableOpacity>
+      </View>
+      <View style={styles.content}>
+        <TouchableOpacity
+          style={[styles.button, isDarkMode && styles.darkButton, { width: screenWidth * 0.8, height: screenHeight * 0.2 }]}
+          onPress={() => navigation.navigate('PresentesScreen')}
+        >
+          <Image
+            source={require('./assets/opa.png')}
+            style={styles.buttonImage}
           />
-        )}
-      >
-        <View style={styles.content}>
-          <TouchableOpacity
-            style={[styles.button, isDarkMode && styles.darkButton, { width: screenWidth * 0.8, height: screenHeight * 0.2 }]}
-            onPress={() => navigation.navigate('PresentesScreen')} // Navega a la pantalla PresentesScreen
-          >
-            <Image
-              source={require('./assets/opa.png')}
-              style={styles.buttonImage}
-            />
-            <Text style={[styles.buttonText, isDarkMode && styles.darkButtonText]}>Estudiantes Asistidos</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.button, isDarkMode && styles.darkButton, { width: screenWidth * 0.8, height: screenHeight * 0.2 }]}
-            onPress={() => alert('Navegar a Justificación de Asistencia')}
-          >
-            <Image
-              source={require('./assets/opa.png')}
-              style={styles.buttonImage}
-            />
-            <Text style={[styles.buttonText, isDarkMode && styles.darkButtonText]}>Justificación de Asistencia</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.topBar}>
-          <TouchableOpacity
-            onPress={() => drawerRef.current.openDrawer()}
-            style={styles.menuButton}
-          >
-            <Icon name="menu" size={30} color={isDarkMode ? 'white' : 'black'} />
-          </TouchableOpacity>
-        </View>
-      </DrawerLayoutAndroid>
+          <Text style={[styles.buttonText, isDarkMode && styles.darkButtonText]}>Estudiantes Asistidos</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={[styles.button, isDarkMode && styles.darkButton, { width: screenWidth * 0.8, height: screenHeight * 0.2 }]}
+          onPress={() => alert('Navegar a Justificación de Asistencia')}
+        >
+          <Image
+            source={require('./assets/opa.png')}
+            style={styles.buttonImage}
+          />
+          <Text style={[styles.buttonText, isDarkMode && styles.darkButtonText]}>Justificación de Asistencia</Text>
+        </TouchableOpacity>
+      </View>
       <BottomNav isDarkMode={isDarkMode} />
     </SafeAreaView>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -106,7 +71,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   button: {
-    marginVertical: 50,
+    marginVertical: 20, // Ajuste del margen vertical
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#ccc',
