@@ -8,12 +8,14 @@ import {
   TouchableOpacity,
   TextInput,
   Switch,
-  Alert,  // Importa Alert
+  Alert,
 } from 'react-native';
 
 export default function JustificacionAsistencia() {
   const [datos, setDatos] = useState([]);
   const [editado, setEditado] = useState({});
+  const [escribiendo, setEscribiendo] = useState(false);
+  const [campoActual, setCampoActual] = useState(null);
 
   useEffect(() => {
     cargarDatos();
@@ -39,8 +41,8 @@ export default function JustificacionAsistencia() {
   const handleJustificacionChange = (nie, text) => {
     setEditado(prev => ({
       ...prev,
-      [nie]: { 
-        ...prev[nie], 
+      [nie]: {
+        ...prev[nie],
         justificacion: text
       }
     }));
@@ -60,7 +62,6 @@ export default function JustificacionAsistencia() {
 
   const guardarDatos = async () => {
     try {
-      // Asegúrate de que todos los campos estén presentes
       const datosParaGuardar = datos.map(item => ({
         nie: item.nie,
         nombre: item.nombre,
@@ -99,6 +100,10 @@ export default function JustificacionAsistencia() {
         placeholder="Justificación"
         onChangeText={(text) => handleJustificacionChange(item.nie, text)}
         value={editado[item.nie]?.justificacion || ''}
+        onFocus={() => {
+          setEscribiendo(true);
+          setCampoActual(item.nie);
+        }}
       />
       <Switch
         value={editado[item.nie]?.check || false}
@@ -129,12 +134,31 @@ export default function JustificacionAsistencia() {
           }
         />
       </View>
-      <TouchableOpacity style={styles.button} onPress={cargarDatos}>
-        <Text style={styles.buttonText}>Refrescar Datos</Text>
-      </TouchableOpacity>
-      <TouchableOpacity style={styles.button} onPress={mostrarConfirmacion}>
-        <Text style={styles.buttonText}>Guardar</Text>
-      </TouchableOpacity>
+
+      {!escribiendo && (
+        <>
+          <TouchableOpacity style={styles.button} onPress={cargarDatos}>
+            <Text style={styles.buttonText}>Refrescar Datos</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={mostrarConfirmacion}>
+            <Text style={styles.buttonText}>Guardar</Text>
+          </TouchableOpacity>
+        </>
+      )}
+
+      {escribiendo && (
+        <View style={styles.overlay}>
+          <Text style={styles.largeText}>
+            {editado[campoActual]?.justificacion || ''}
+          </Text>
+          <TouchableOpacity
+            style={styles.overlayButton}
+            onPress={() => setEscribiendo(false)}
+          >
+            <Text style={styles.overlayButtonText}>Terminar</Text>
+          </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -197,6 +221,32 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   buttonText: {
+    color: '#fff',
+    fontSize: 18,
+  },
+  overlay: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  largeText: {
+    color: '#fff',
+    fontSize: 32,
+    textAlign: 'center',
+    padding: 20,
+  },
+  overlayButton: {
+    backgroundColor: '#056347',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+  },
+  overlayButtonText: {
     color: '#fff',
     fontSize: 18,
   },

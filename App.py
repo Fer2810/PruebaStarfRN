@@ -104,7 +104,7 @@ def obtener_no_presentes():
 # Ruta para guardar justificaciones
 @app.route('/guardar_justificaciones', methods=['POST'])
 def guardar_justificaciones():
-    datos = request.json  # Obtener la lista de objetos desde la solicitud
+    datos = request.json
     connection = get_db_connection()
     cursor = connection.cursor()
 
@@ -116,24 +116,26 @@ def guardar_justificaciones():
         print(f"Inserting data for NIE {item.get('nie')}: {item}")
 
         # Verificación de claves necesarias
-        required_keys = ['nie', 'nombre', 'apellido', 'bachillerato', 'genero', 'id_año', 'justificacion']
+        required_keys = ['nie', 'nombre', 'apellido', 'bachillerato', 'genero', 'id_año']
         missing_keys = [key for key in required_keys if key not in item]
 
         if missing_keys:
             print(f"Las claves faltantes para el NIE {item.get('nie')} son: {missing_keys}")
             continue  # O maneja este caso como prefieras
 
+        justificacion = item.get('justificacion', 'presente')  # Valor por defecto para justificacion
+
         # Dependiendo del estado (check), se guarda en una tabla u otra
         if item.get('check'):
             cursor.execute("""
                 INSERT INTO asistencia_general (nie, nombre, apellido, bachillerato, genero, id_año, fecha_registro, justificacion_asistencia)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, (item['nie'], item['nombre'], item['apellido'], item['bachillerato'], item['genero'], item['id_año'], datetime.now(), item['justificacion']))
+            """, (item['nie'], item['nombre'], item['apellido'], item['bachillerato'], item['genero'], item['id_año'], datetime.now(), justificacion))
         else:
             cursor.execute("""
                 INSERT INTO no_asistencia_general (nie, nombre, apellido, bachillerato, genero, id_año, fecha_registro, justificacion_asistencia)
                 VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, (item['nie'], item['nombre'], item['apellido'], item['bachillerato'], item['genero'], item['id_año'], datetime.now(), item['justificacion']))
+            """, (item['nie'], item['nombre'], item['apellido'], item['bachillerato'], item['genero'], item['id_año'], datetime.now(), justificacion))
 
     connection.commit()
     cursor.close()
