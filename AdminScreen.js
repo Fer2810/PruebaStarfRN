@@ -8,7 +8,7 @@ const AdminScreen = () => {
   const navigation = useNavigation();
 
   const handleLogin = () => {
-    fetch('http://192.168.5.98:5000/login/administrador', {
+    fetch('http://192.168.5.63:5000/login/administrador', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

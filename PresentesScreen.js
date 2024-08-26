@@ -15,7 +15,7 @@ const PresentesScreen = () => {
     const obtenerPresentes = async () => {
         setLoading(true);
         try {
-            const response = await axios.get('http://192.168.5.98:5000/obtener_presentes');
+            const response = await axios.get('http://192.168.5.63:5000/obtener_presentes');
             setPresentes(response.data);
         } catch (error) {
             console.error(error);
@@ -31,7 +31,7 @@ const PresentesScreen = () => {
     const guardarAsistencia = async () => {
         setShowSaveConfirm(false);
         try {
-            await axios.post('http://192.168.5.98:5000/guardar_asistencia', presentes);
+            await axios.post('http://192.168.5.63:5000/guardar_asistencia', presentes);
             Alert.alert('Éxito', 'Datos guardados con éxito');
         } catch (error) {
             console.error(error);
