@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 
-const ProfesorScreen = () => {
+const Stack = createStackNavigator();
+
+const ProfesorScreen = ({ navigation }) => {
   const [nombre, setNombre] = useState('');
   const [contraseña, setContraseña] = useState('');
-  const navigation = useNavigation();
 
   const handleLogin = () => {
     fetch('http://192.168.5.85:5000/login/profesor', {
@@ -54,11 +56,9 @@ const ProfesorScreen = () => {
   );
 };
 
-const WelcomeProfesorScreen = () => {
-  const navigation = useNavigation();
-
+const WelcomeProfesorScreen = ({ navigation }) => {
   const handleAttendance = () => {
-    navigation.navigate('AttendanceScreen'); // Navega a la pantalla de asistencia (asegúrate de tener esta ruta configurada)
+    navigation.navigate('AttendanceScreen'); // Navega a la pantalla de asistencia
   };
 
   return (
@@ -70,6 +70,26 @@ const WelcomeProfesorScreen = () => {
     </View>
   );
 };
+
+const AttendanceScreen = () => {
+  return (
+    <View style={styles.container}>
+      <Text>Esta es la pantalla de asistencia.</Text>
+    </View>
+  );
+};
+
+export default function App() {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="ProfesorScreen">
+        <Stack.Screen name="ProfesorScreen" component={ProfesorScreen} options={{ title: 'Profesor Login' }} />
+        <Stack.Screen name="WelcomeProfesorScreen" component={WelcomeProfesorScreen} options={{ title: 'Bienvenido Profesor' }} />
+        <Stack.Screen name="AttendanceScreen" component={AttendanceScreen} options={{ title: 'Asistencia' }} />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -97,5 +117,3 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 });
-
-export default ProfesorScreen;
