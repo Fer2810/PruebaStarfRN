@@ -8,7 +8,7 @@ const ProfesorScreen = () => {
   const navigation = useNavigation();
 
   const handleLogin = () => {
-    fetch('http://192.168.5.63:5000/login/profesor', {
+    fetch('http://192.168.5.85:5000/login/profesor', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -54,6 +54,23 @@ const ProfesorScreen = () => {
   );
 };
 
+const WelcomeProfesorScreen = () => {
+  const navigation = useNavigation();
+
+  const handleAttendance = () => {
+    navigation.navigate('AttendanceScreen'); // Navega a la pantalla de asistencia (asegúrate de tener esta ruta configurada)
+  };
+
+  return (
+    <View style={styles.welcomeContainer}>
+      <Button
+        title="Ingresar asistencia por materia"
+        onPress={handleAttendance}
+      />
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -72,6 +89,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 12,
     paddingHorizontal: 10,
+  },
+  welcomeContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#fff',
   },
 });
 
