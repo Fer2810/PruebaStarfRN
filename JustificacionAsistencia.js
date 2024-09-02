@@ -69,7 +69,7 @@ export default function JustificacionAsistencia() {
         bachillerato: item.bachillerato,
         genero: item.genero,
         id_año: item.id_año,
-        justificacion: editado[item.nie]?.justificacion || '',
+        justificacion: editado[item.nie]?.check ? editado[item.nie]?.justificacion || '' : 'no_asistencia', // Valor por defecto
         check: editado[item.nie]?.check || false
       }));
 
@@ -99,7 +99,8 @@ export default function JustificacionAsistencia() {
         style={styles.input}
         placeholder="Justificación"
         onChangeText={(text) => handleJustificacionChange(item.nie, text)}
-        value={editado[item.nie]?.justificacion || ''}
+        value={editado[item.nie]?.justificacion || (editado[item.nie]?.check ? '' : 'no_asistencia')} // Valor por defecto
+        editable={editado[item.nie]?.check} // Solo editable si el interruptor está activado
         onFocus={() => {
           setEscribiendo(true);
           setCampoActual(item.nie);

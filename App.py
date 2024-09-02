@@ -76,13 +76,17 @@ def guardar_asistencia():
     cursor = connection.cursor()
 
     for presente in datos:
-        cursor.execute("""
-            INSERT INTO asistencia_general (nie, nombre, apellido, bachillerato, genero, id_año)
-            VALUES (%s, %s, %s, %s, %s, %s)
-        """, (presente['nie'], presente['nombre'], presente['apellido'], presente['bachillerato'], presente['genero'], presente['id_año']))
+        try:
+            cursor.execute("""
+                INSERT INTO asistencia_general (nie, nombre, apellido, bachillerato, genero, id_año, fecha_registro)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """, (presente['nie'], presente['nombre'], presente['apellido'], presente['bachillerato'], presente['genero'], presente['id_año'], datetime.now()))
+        except mysql.connector.Error as err:
+            print(f"Error al insertar en asistencia_general: {err}")
+            connection.rollback()
+            return jsonify({"error": "No se pudo guardar la asistencia"}), 500
 
     connection.commit()
-
     cursor.close()
     connection.close()
 
@@ -112,30 +116,23 @@ def guardar_justificaciones():
         return jsonify({'error': 'El formato de los datos es incorrecto'}), 400
 
     for item in datos:
-        # Imprime los datos para depuración
-        print(f"Inserting data for NIE {item.get('nie')}: {item}")
+        try:
+            justificacion = item.get('justificacion', 'presente')  # Valor por defecto para justificacion
 
-        # Verificación de claves necesarias
-        required_keys = ['nie', 'nombre', 'apellido', 'bachillerato', 'genero', 'id_año']
-        missing_keys = [key for key in required_keys if key not in item]
-
-        if missing_keys:
-            print(f"Las claves faltantes para el NIE {item.get('nie')} son: {missing_keys}")
-            continue  # O maneja este caso como prefieras
-
-        justificacion = item.get('justificacion', 'presente')  # Valor por defecto para justificacion
-
-        # Dependiendo del estado (check), se guarda en una tabla u otra
-        if item.get('check'):
-            cursor.execute("""
-                INSERT INTO asistencia_general (nie, nombre, apellido, bachillerato, genero, id_año, fecha_registro, justificacion_asistencia)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, (item['nie'], item['nombre'], item['apellido'], item['bachillerato'], item['genero'], item['id_año'], datetime.now(), justificacion))
-        else:
-            cursor.execute("""
-                INSERT INTO no_asistencia_general (nie, nombre, apellido, bachillerato, genero, id_año, fecha_registro, justificacion_asistencia)
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-            """, (item['nie'], item['nombre'], item['apellido'], item['bachillerato'], item['genero'], item['id_año'], datetime.now(), justificacion))
+            if item.get('check'):
+                cursor.execute("""
+                    INSERT INTO asistencia_general (nie, nombre, apellido, bachillerato, genero, id_año, fecha_registro, justificacion_asistencia)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                """, (item['nie'], item['nombre'], item['apellido'], item['bachillerato'], item['genero'], item['id_año'], datetime.now(), justificacion))
+            else:
+                cursor.execute("""
+                    INSERT INTO no_asistencia_general (nie, nombre, apellido, bachillerato, genero, id_año, fecha_registro, justificacion_asistencia)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                """, (item['nie'], item['nombre'], item['apellido'], item['bachillerato'], item['genero'], item['id_año'], datetime.now(), justificacion))
+        except mysql.connector.Error as err:
+            print(f"Error al insertar en justificaciones: {err}")
+            connection.rollback()
+            return jsonify({"error": "No se pudo guardar la justificación"}), 500
 
     connection.commit()
     cursor.close()
