@@ -11,6 +11,7 @@ import WelcomeProfesorScreen from './WelcomeProfesorScreen';
 import PresentesScreen from './PresentesScreen';
 import JustificacionAsistencia from './JustificacionAsistencia';
 import FullScreenMenu from './FullScreenMenu'; // Importar FullScreenMenu
+import AsistenciaPorMateria from './AsistenciaPorMateria';
 
 const Stack = createStackNavigator();
 
@@ -58,6 +59,10 @@ export default function App() {
           name="JustificacionAsistencia" 
           component={JustificacionAsistencia} 
         />
+          <Stack.Screen 
+            name="AsistenciaPorMateria" 
+            component={AsistenciaPorMateria} 
+          />
       </Stack.Navigator>
       </NavigationContainer>
     </ThemeProvider>
