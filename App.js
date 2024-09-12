@@ -12,6 +12,7 @@ import PresentesScreen from './PresentesScreen';
 import JustificacionAsistencia from './JustificacionAsistencia';
 import FullScreenMenu from './FullScreenMenu'; // Importar FullScreenMenu
 import AsistenciaPorMateria from './AsistenciaPorMateria';
+import ListaEstudiantes from './ListaEstudiantes'; // Importar ListaEstudiantes
 
 const Stack = createStackNavigator();
 
@@ -56,12 +57,16 @@ export default function App() {
             options={{ headerShown: false }} 
           />
           <Stack.Screen 
-          name="JustificacionAsistencia" 
-          component={JustificacionAsistencia} 
-        />
+            name="JustificacionAsistencia" 
+            component={JustificacionAsistencia} 
+          />
           <Stack.Screen 
             name="AsistenciaPorMateria" 
             component={AsistenciaPorMateria} 
+          />
+          <Stack.Screen 
+            name="ListaEstudiantes" 
+            component={ListaEstudiantes}  // Añadir ListaEstudiantes al Stack
           />
       </Stack.Navigator>
       </NavigationContainer>
