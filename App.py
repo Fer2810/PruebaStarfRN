@@ -2,6 +2,9 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 import mysql.connector
 from datetime import datetime
+#import uuid
+import random
+import string
 
 app = Flask(__name__)
 CORS(app)
@@ -14,6 +17,121 @@ def get_db_connection():
         password="",  # Cambia esto por tu contraseña de MySQL
         database="app_incas"  # Cambia esto por el nombre de tu base de datos
     )
+    
+@app.route('/buscar_anio', methods=['GET'])
+def buscar_anio():
+    search = request.args.get('search', '')
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT id_año FROM años WHERE id_año LIKE %s AND estado = 1", (f"%{search}%",))
+    años = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return jsonify(años)
+
+@app.route('/obtener_estudiantes', methods=['GET'])
+def obtener_estudiantes():
+    id_año = request.args.get('id_año')
+    connection = get_db_connection()
+    cursor = connection.cursor(dictionary=True)
+    cursor.execute("SELECT nie, nombre, apellido, bachillerato, genero FROM presentes WHERE id_año = %s ", (id_año,))
+    estudiantes = cursor.fetchall()
+
+    cursor.close()
+    connection.close()
+
+    return jsonify(estudiantes)
+
+'''
+##############################################################
+Funcion para generar los id de registro por materia unicos 
+
+
+'''
+
+def generate_unique_id(existing_ids, length=10):
+    characters = string.ascii_letters + string.digits  # Letras y números
+    while True:
+        new_id = ''.join(random.choices(characters, k=length))
+        if new_id not in existing_ids:  # Asegúrate de que el ID sea único
+            return new_id
+
+
+
+@app.route('/asistencia_materia', methods=['POST'])
+def asistencia_materia():
+    data = request.json
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    # Obtener IDs existentes para evitar colisiones
+    cursor.execute("SELECT id FROM asistencia_materia")
+    existing_ids = [row[0] for row in cursor.fetchall()]
+
+    for estudiante in data['estudiantes']:
+        unique_id = generate_unique_id(existing_ids)
+
+        cursor.execute("""
+            INSERT INTO asistencia_materia (id, id_año, materia, profesor, fecha_registro, nie, nombre, apellido, justificacion_asistencia)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            unique_id,
+            data['id_año'],
+            data['materia'],
+            data['profesor'],
+            data['fecha_registro'],
+            estudiante['nie'],
+            estudiante['nombre'],
+            estudiante['apellido'],
+            estudiante['justificacion']
+        ))
+
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+    return jsonify({"status": "success"})
+
+@app.route('/no_asistencia_materia', methods=['POST'])
+def no_asistencia_materia():
+    data = request.json
+    connection = get_db_connection()
+    cursor = connection.cursor()
+
+    # Obtener IDs existentes para evitar colisiones
+    cursor.execute("SELECT id FROM no_asistencia_materia")
+    existing_ids = [row[0] for row in cursor.fetchall()]
+
+    for estudiante in data['estudiantes']:
+        unique_id = generate_unique_id(existing_ids)
+
+        cursor.execute("""
+            INSERT INTO no_asistencia_materia (id, id_año, materia, profesor, fecha_registro, nie, nombre, apellido, justificacion_asistencia)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (
+            unique_id,
+            data['id_año'],
+            data['materia'],
+            data['profesor'],
+            data['fecha_registro'],
+            estudiante['nie'],
+            estudiante['nombre'],
+            estudiante['apellido'],
+            estudiante['justificacion']
+        ))
+
+    connection.commit()
+    cursor.close()
+    connection.close()
+
+    return jsonify({"status": "success"})
+
+    
+    
+    
+    
 
 # Ruta para inicio de sesión de administrador
 @app.route('/login/administrador', methods=['POST'])
