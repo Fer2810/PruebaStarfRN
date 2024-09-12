@@ -23,7 +23,7 @@ export default function JustificacionAsistencia() {
 
   const cargarDatos = async () => {
     try {
-      const response = await fetch('http://192.168.5.63:5000/obtener_no_presentes');
+      const response = await fetch('http://192.168.1.6:5000/obtener_no_presentes');
       const data = await response.json();
       setDatos(data);
     } catch (error) {
@@ -73,7 +73,7 @@ export default function JustificacionAsistencia() {
         check: editado[item.nie]?.check || false
       }));
 
-      await fetch('http://192.168.5.63:5000/guardar_justificaciones', {
+      await fetch('http://192.168.1.6:5000/guardar_justificaciones', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
