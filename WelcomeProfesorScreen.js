@@ -43,10 +43,7 @@ const WelcomeProfesorScreen = ({ navigation }) => {
         </TouchableOpacity>
       </View>
 
-      {/* Añadir la barra de navegación inferior */}
-      <View style={styles.navBarContainer}>
-        <BottomNav selectedIndex={selectedIndex} onItemTapped={handleItemTapped} />
-      </View>
+      
     </SafeAreaView>
   );
 };

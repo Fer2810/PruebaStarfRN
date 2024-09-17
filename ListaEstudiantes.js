@@ -17,7 +17,7 @@ const ListaEstudiantes = ({ route }) => {
   useEffect(() => {
     const obtenerEstudiantes = async () => {
       try {
-        const response = await axios.get(`http://192.168.1.49:5000/obtener_estudiantes?id_año=${id_año}`);
+        const response = await axios.get(`http://192.168.5.62:5000/obtener_estudiantes?id_año=${id_año}`);
         const datosEstudiantes = response.data.map(item => ({
           ...item,
           check: true,

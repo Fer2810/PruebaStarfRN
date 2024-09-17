@@ -36,7 +36,7 @@ def obtener_estudiantes():
     id_año = request.args.get('id_año')
     connection = get_db_connection()
     cursor = connection.cursor(dictionary=True)
-    cursor.execute("SELECT nie, nombre, apellido, bachillerato, genero FROM presentes WHERE id_año = %s ", (id_año,))
+    cursor.execute("SELECT nie, nombre, apellido, bachillerato, genero FROM estudiantes WHERE id_año = %s ", (id_año,))
     estudiantes = cursor.fetchall()
 
     cursor.close()
@@ -74,8 +74,8 @@ def asistencia_materia():
         unique_id = generate_unique_id(existing_ids)
 
         cursor.execute("""
-            INSERT INTO asistencia_materia (id, id_año, materia, profesor, fecha_registro, nie, nombre, apellido, justificacion_asistencia)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO asistencia_materia (id, id_año, materia, profesor, fecha_registro, nie, nombre, apellido, genero,justificacion_asistencia)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (
             unique_id,
             data['id_año'],
@@ -85,6 +85,7 @@ def asistencia_materia():
             estudiante['nie'],
             estudiante['nombre'],
             estudiante['apellido'],
+            estudiante['genero'],
             estudiante['justificacion']
         ))
 
@@ -108,8 +109,8 @@ def no_asistencia_materia():
         unique_id = generate_unique_id(existing_ids)
 
         cursor.execute("""
-            INSERT INTO no_asistencia_materia (id, id_año, materia, profesor, fecha_registro, nie, nombre, apellido, justificacion_asistencia)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+            INSERT INTO no_asistencia_materia (id, id_año, materia, profesor, fecha_registro, nie, nombre, apellido, genero,justificacion_asistencia)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s,%s)
         """, (
             unique_id,
             data['id_año'],
@@ -119,6 +120,7 @@ def no_asistencia_materia():
             estudiante['nie'],
             estudiante['nombre'],
             estudiante['apellido'],
+            estudiante['genero'],
             estudiante['justificacion']
         ))
 

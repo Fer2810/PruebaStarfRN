@@ -1,13 +1,25 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, Image, Dimensions } from 'react-native';
-import Icon from 'react-native-vector-icons/MaterialIcons';
-import { ThemeContext } from './ThemeContext'; // Importar ThemeContext
-import FullScreenMenu from './FullScreenMenu'; // Importar el menú lateral
-import BottomNav from './BottomNav'; // Importar la barra de navegación
-
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, TextInput, FlatList } from 'react-native';
+import { ThemeContext } from './ThemeContext';
+import axios from 'axios';
 
 const AsistenciaPorMateria = ({ navigation }) => {
   const { isDarkMode } = useContext(ThemeContext);
+  const [search, setSearch] = useState('');
+  const [resultados, setResultados] = useState([]);
+
+  const handleSearch = async () => {
+    try {
+      const response = await axios.get(`http://192.168.5.62:5000/buscar_anio?search=${search}`);  
+      setResultados(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSelectAnio = (id_año) => {
+    navigation.navigate('ListaEstudiantes', { id_año });
+  };
 
   return (
     <SafeAreaView style={[styles.container, isDarkMode && styles.darkContainer]}>
@@ -17,10 +29,25 @@ const AsistenciaPorMateria = ({ navigation }) => {
         </Text>
       </View>
       <View style={styles.content}>
-        {/* Aquí puedes agregar la lógica y componentes que necesites para mostrar la asistencia por materia */}
-        <Text style={[styles.text, isDarkMode && styles.darkText]}>
-          Aquí se mostrará la asistencia de los estudiantes por materia.
-        </Text>
+        <TextInput
+          style={[styles.input, isDarkMode && styles.darkInput]}
+          placeholder="Buscar Año"
+          placeholderTextColor={isDarkMode ? '#aaa' : '#555'}
+          onChangeText={setSearch}
+          onSubmitEditing={handleSearch}
+          value={search}
+        />
+        <FlatList
+          data={resultados}
+          renderItem={({ item }) => (
+            <TouchableOpacity style={styles.item} onPress={() => handleSelectAnio(item.id_año)}>
+              <Text style={[styles.itemText, isDarkMode && styles.darkItemText]}>
+                Sección: {item.id_año}
+              </Text>
+            </TouchableOpacity>
+          )}
+          keyExtractor={(item) => item.id_año.toString()}
+        />
       </View>
     </SafeAreaView>
   );
@@ -29,39 +56,52 @@ const AsistenciaPorMateria = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#f2f2f2',
   },
   darkContainer: {
-    backgroundColor: '#000',
+    backgroundColor: '#333',
   },
   header: {
     padding: 20,
-    backgroundColor: '#f8f8f8',
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
+    backgroundColor: '#6200EE',
+    alignItems: 'center',
   },
   headerText: {
-    fontSize: 24,
+    fontSize: 20,
+    color: '#ffffff',
     fontWeight: 'bold',
-    color: '#000',
   },
   darkHeaderText: {
-    color: '#fff',
+    color: '#ffffff',
   },
   content: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
     padding: 20,
   },
-  text: {
-    fontSize: 18,
-    color: '#000',
+  input: {
+    height: 50,
+    borderColor: '#6200EE',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingHorizontal: 15,
+    marginBottom: 20,
   },
-  darkText: {
-    color: '#fff',
+  darkInput: {
+    borderColor: '#BB86FC',
+    color: '#ffffff',
+  },
+  item: {
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: '#dddddd',
+  },
+  itemText: {
+    fontSize: 16,
+    color: '#333',
+  },
+  darkItemText: {
+    color: '#ffffff',
   },
 });
 
 export default AsistenciaPorMateria;
-

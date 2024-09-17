@@ -15,7 +15,7 @@ const FormularioAsistencia = ({ estudiantesAsistencia, estudiantesNoAsistencia, 
     try {
       // Enviar los estudiantes que están presentes
       if (estudiantesAsistencia.length > 0) {
-        await axios.post('http://192.168.1.49:5000/asistencia_materia', {
+        await axios.post('http://192.168.5.62:5000/asistencia_materia', {
           id_año,
           materia,
           profesor,
@@ -26,7 +26,7 @@ const FormularioAsistencia = ({ estudiantesAsistencia, estudiantesNoAsistencia, 
 
       // Enviar los estudiantes que están con justificación de inasistencia
       if (estudiantesNoAsistencia.length > 0) {
-        await axios.post('http://192.168.1.49:5000/no_asistencia_materia', {
+        await axios.post('http://192.168.5.62:5000/no_asistencia_materia', {
           id_año,
           materia,
           profesor,
