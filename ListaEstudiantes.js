@@ -13,11 +13,13 @@ const ListaEstudiantes = ({ route }) => {
   const [asistencia, setAsistencia] = useState([]); // Estudiantes presentes
   const [noAsistencia, setNoAsistencia] = useState([]); // Estudiantes no presentes
   const [showModal, setShowModal] = useState(false);
+  const [showJustificationModal, setShowJustificationModal] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
 
   useEffect(() => {
     const obtenerEstudiantes = async () => {
       try {
-        const response = await axios.get(`http://192.168.5.62:5000/obtener_estudiantes?id_año=${id_año}`);
+        const response = await axios.get(`http://192.168.1.49:5000/obtener_estudiantes?id_año=${id_año}`);
         const datosEstudiantes = response.data.map(item => ({
           ...item,
           check: true,
@@ -38,7 +40,10 @@ const ListaEstudiantes = ({ route }) => {
     const estudiante = estudiantes.find(est => est.nie === nie);
 
     if (isChecked) {
-      // Si se desmarca, quitarlo de la lista de asistencia y agregarlo a la lista de no asistencia
+      // Si se desmarca, abrir el modal para editar justificación
+      setSelectedStudent(estudiante);
+      setShowJustificationModal(true);
+
       setEditado(prev => ({
         ...prev,
         [nie]: { check: false, justificacion: '' }
@@ -56,18 +61,23 @@ const ListaEstudiantes = ({ route }) => {
     }
   };
 
-  const handleJustificacionChange = (nie, text) => {
-    // Actualizar la justificación del estudiante en no asistencia
-    const estudiante = noAsistencia.find(est => est.nie === nie);
-    if (estudiante) {
+  const handleJustificacionChange = (text) => {
+    const nie = selectedStudent?.nie;
+    if (nie) {
+      // Actualizar la justificación del estudiante en no asistencia
       setNoAsistencia(prev => prev.map(est => est.nie === nie ? { ...est, justificacion: text } : est));
+
+      // Actualizar el estado de edición
+      setEditado(prev => ({
+        ...prev,
+        [nie]: { ...prev[nie], justificacion: text }
+      }));
     }
-    
-    // Actualizar el estado de edición
-    setEditado(prev => ({
-      ...prev,
-      [nie]: { ...prev[nie], justificacion: text }
-    }));
+  };
+
+  const closeJustificationModal = () => {
+    setShowJustificationModal(false);
+    setSelectedStudent(null);
   };
 
   const renderItem = ({ item }) => {
@@ -75,7 +85,7 @@ const ListaEstudiantes = ({ route }) => {
     const justificationValue = editado[item.nie]?.justificacion !== undefined
       ? editado[item.nie].justificacion
       : 'Presente';
-
+  
     return (
       <View style={[styles.row, isDarkMode && styles.darkRow]}>
         <Text style={[styles.cell, isDarkMode && styles.darkText]}>{item.nie}</Text>
@@ -84,9 +94,14 @@ const ListaEstudiantes = ({ route }) => {
         <TextInput
           style={[styles.input, isDarkMode && styles.darkInput, !isChecked && styles.disabledInput]}
           placeholder="Justificación"
-          onChangeText={(text) => handleJustificacionChange(item.nie, text)}
+          onFocus={() => {
+            if (!isChecked) {
+              setSelectedStudent(item);
+              setShowJustificationModal(true);
+            }
+          }}
           value={justificationValue}
-          editable={!isChecked}
+          editable={!isChecked} // Solo es editable si el checkbox está desmarcado
         />
         <Checkbox
           value={isChecked}
@@ -95,6 +110,7 @@ const ListaEstudiantes = ({ route }) => {
       </View>
     );
   };
+  
 
   const handleGuardarCambios = () => {
     // Mostrar el formulario para completar los datos de asistencia y enviar
@@ -134,6 +150,29 @@ const ListaEstudiantes = ({ route }) => {
               id_año={id_año} 
               onClose={() => setShowModal(false)} 
             />
+          </View>
+        </View>
+      </Modal>
+
+      {/* Modal para la justificación */}
+      <Modal
+        visible={showJustificationModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={closeJustificationModal}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalText}>Justificación para {selectedStudent?.nombre} {selectedStudent?.apellido}</Text>
+            <TextInput
+              style={styles.justificationInput}
+              placeholder="Escribe la justificación"
+              value={editado[selectedStudent?.nie]?.justificacion || ''}
+              onChangeText={handleJustificacionChange}
+            />
+            <TouchableOpacity style={styles.button} onPress={closeJustificationModal}>
+              <Text style={styles.buttonText}>Guardar Justificación</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
@@ -214,6 +253,17 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 10,
     width: '80%',
+  },
+  modalText: {
+    fontSize: 18,
+    marginBottom: 10,
+  },
+  justificationInput: {
+    height: 40,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    marginBottom: 10,
+    padding: 10,
   },
 });
 
